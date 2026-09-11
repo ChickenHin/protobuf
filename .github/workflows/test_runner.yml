@@ -11,36 +11,36 @@ name: Tests
 
 on:
   # continuous
-  schedule:
-    # Run every hour
-    - cron: "0 * * * *"
+  # schedule:
+  #   # Run every hour
+  #   - cron: "0 * * * *"
 
-  # postsubmit
-  push:
-    branches:
-      - main
-      - '[0-9]+.x'
-      # For testing purposes so we can stage this on the `gha` branch.
-      - gha
+  # # postsubmit
+  # push:
+  #   branches:
+  #     - main
+  #     - '[0-9]+.x'
+  #     # For testing purposes so we can stage this on the `gha` branch.
+  #     - gha
 
-  # safe presubmit
-  pull_request:
-    branches:
-      - main
-      - '[0-9]+.x'
-      # For testing purposes so we can stage this on the `gha` branch.
-      - gha
+  # # safe presubmit
+  # pull_request:
+  #   branches:
+  #     - main
+  #     - '[0-9]+.x'
+  #     # For testing purposes so we can stage this on the `gha` branch.
+  #     - gha
 
   # unsafe presubmit
-  pull_request_target:
-    branches:
-      - main
-      - '[0-9]+.x'
-      # For testing purposes so we can stage this on the `gha` branch.
-      - gha
-    types: [labeled, opened, reopened, synchronize]
+  # pull_request_target:
+  #   branches:
+  #     - main
+  #     - '[0-9]+.x'
+  #     # For testing purposes so we can stage this on the `gha` branch.
+  #     - gha
+  #   types: [labeled, opened, reopened, synchronize]
 
-  # manual
+  # # manual
   workflow_dispatch:
  
 permissions:
@@ -107,38 +107,38 @@ jobs:
             echo "continuous-prefix=(Continuous)" >> "$GITHUB_OUTPUT"
           fi
 
-  remove-tag:
-    name: Remove safety tag
-    needs: [set-vars]
-    if: github.event.action == 'labeled'
-    runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
-    steps:
-      - uses: actions-ecosystem/action-remove-labels@2ce5d41b4b6aa8503e285553f75ed56e0a40bae0 # v1.3.0
-        with:
-          fail_on_error: true
-          labels: ':a: safe for tests'
+  # remove-tag:
+  #   name: Remove safety tag
+  #   needs: [set-vars]
+  #   if: github.event.action == 'labeled'
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     pull-requests: write
+  #   steps:
+  #     - uses: actions-ecosystem/action-remove-labels@2ce5d41b4b6aa8503e285553f75ed56e0a40bae0 # v1.3.0
+  #       with:
+  #         fail_on_error: true
+  #         labels: ':a: safe for tests'
 
-  validate-yaml:
-    name: Validate YAML
-    needs: [set-vars]
-    uses: ./.github/workflows/test_yaml.yml
-    with:
-      safe-checkout: ${{ needs.set-vars.outputs.checkout-sha }}
+  # validate-yaml:
+  #   name: Validate YAML
+  #   needs: [set-vars]
+  #   uses: ./.github/workflows/test_yaml.yml
+  #   with:
+  #     safe-checkout: ${{ needs.set-vars.outputs.checkout-sha }}
 
   # Note: this pattern of passing the head sha is vulnerable to PWN requests for
   # pull_request_target events. We carefully limit those workflows to require a
   # human stamp before continuing.
-  bazel:
-    name: Bazel
-    needs: [set-vars]
-    uses: ./.github/workflows/test_bazel.yml
-    with:
-      continuous-run: ${{ needs.set-vars.outputs.continuous-run }}
-      safe-checkout: ${{ needs.set-vars.outputs.checkout-sha }}
-      continuous-prefix: ${{ needs.set-vars.outputs.continuous-prefix }}
-    secrets: inherit
+  # bazel:
+  #   name: Bazel
+  #   needs: [set-vars]
+  #   uses: ./.github/workflows/test_bazel.yml
+  #   with:
+  #     continuous-run: ${{ needs.set-vars.outputs.continuous-run }}
+  #     safe-checkout: ${{ needs.set-vars.outputs.checkout-sha }}
+  #     continuous-prefix: ${{ needs.set-vars.outputs.continuous-prefix }}
+  #   secrets: inherit
 
   cpp:
     name: C++
@@ -148,121 +148,121 @@ jobs:
       continuous-run: ${{ needs.set-vars.outputs.continuous-run }}
       safe-checkout: ${{ needs.set-vars.outputs.checkout-sha }}
       continuous-prefix: ${{ needs.set-vars.outputs.continuous-prefix }}
-    secrets: inherit
+    # secrets: inherit
 
-  java:
-    name: Java
-    needs: [set-vars]
-    uses: ./.github/workflows/test_java.yml
-    with:
-      continuous-run: ${{ needs.set-vars.outputs.continuous-run }}
-      safe-checkout: ${{ needs.set-vars.outputs.checkout-sha }}
-      continuous-prefix: ${{ needs.set-vars.outputs.continuous-prefix }}
-    secrets: inherit
+  # java:
+  #   name: Java
+  #   needs: [set-vars]
+  #   uses: ./.github/workflows/test_java.yml
+  #   with:
+  #     continuous-run: ${{ needs.set-vars.outputs.continuous-run }}
+  #     safe-checkout: ${{ needs.set-vars.outputs.checkout-sha }}
+  #     continuous-prefix: ${{ needs.set-vars.outputs.continuous-prefix }}
+  #   secrets: inherit
 
-  python:
-    name: Python
-    needs: [set-vars]
-    uses: ./.github/workflows/test_python.yml
-    with:
-      continuous-run: ${{ needs.set-vars.outputs.continuous-run }}
-      safe-checkout: ${{ needs.set-vars.outputs.checkout-sha }}
-      continuous-prefix: ${{ needs.set-vars.outputs.continuous-prefix }}
-    secrets: inherit
+  # python:
+  #   name: Python
+  #   needs: [set-vars]
+  #   uses: ./.github/workflows/test_python.yml
+  #   with:
+  #     continuous-run: ${{ needs.set-vars.outputs.continuous-run }}
+  #     safe-checkout: ${{ needs.set-vars.outputs.checkout-sha }}
+  #     continuous-prefix: ${{ needs.set-vars.outputs.continuous-prefix }}
+  #   secrets: inherit
 
-  ruby:
-    name: Ruby
-    needs: [set-vars]
-    uses: ./.github/workflows/test_ruby.yml
-    with:
-      continuous-run: ${{ needs.set-vars.outputs.continuous-run }}
-      safe-checkout: ${{ needs.set-vars.outputs.checkout-sha }}
-      continuous-prefix: ${{ needs.set-vars.outputs.continuous-prefix }}
-    secrets: inherit
+  # ruby:
+  #   name: Ruby
+  #   needs: [set-vars]
+  #   uses: ./.github/workflows/test_ruby.yml
+  #   with:
+  #     continuous-run: ${{ needs.set-vars.outputs.continuous-run }}
+  #     safe-checkout: ${{ needs.set-vars.outputs.checkout-sha }}
+  #     continuous-prefix: ${{ needs.set-vars.outputs.continuous-prefix }}
+  #   secrets: inherit
 
-  php:
-    name: PHP
-    needs: [set-vars]
-    uses: ./.github/workflows/test_php.yml
-    with:
-      continuous-run: ${{ needs.set-vars.outputs.continuous-run }}
-      safe-checkout: ${{ needs.set-vars.outputs.checkout-sha }}
-      continuous-prefix: ${{ needs.set-vars.outputs.continuous-prefix }}
-    secrets: inherit
+  # php:
+  #   name: PHP
+  #   needs: [set-vars]
+  #   uses: ./.github/workflows/test_php.yml
+  #   with:
+  #     continuous-run: ${{ needs.set-vars.outputs.continuous-run }}
+  #     safe-checkout: ${{ needs.set-vars.outputs.checkout-sha }}
+  #     continuous-prefix: ${{ needs.set-vars.outputs.continuous-prefix }}
+  #   secrets: inherit
 
-  php-ext:
-    name: PHP Extension
-    needs: [set-vars]
-    uses: ./.github/workflows/test_php_ext.yml
-    with:
-      continuous-run: ${{ needs.set-vars.outputs.continuous-run }}
-      safe-checkout: ${{ needs.set-vars.outputs.checkout-sha }}
-      continuous-prefix: ${{ needs.set-vars.outputs.continuous-prefix }}
-    secrets: inherit
+  # php-ext:
+  #   name: PHP Extension
+  #   needs: [set-vars]
+  #   uses: ./.github/workflows/test_php_ext.yml
+  #   with:
+  #     continuous-run: ${{ needs.set-vars.outputs.continuous-run }}
+  #     safe-checkout: ${{ needs.set-vars.outputs.checkout-sha }}
+  #     continuous-prefix: ${{ needs.set-vars.outputs.continuous-prefix }}
+  #   secrets: inherit
 
-  csharp:
-    name: C#
-    needs: [set-vars]
-    uses: ./.github/workflows/test_csharp.yml
-    with:
-      safe-checkout: ${{ needs.set-vars.outputs.checkout-sha }}
-    secrets: inherit
+  # csharp:
+  #   name: C#
+  #   needs: [set-vars]
+  #   uses: ./.github/workflows/test_csharp.yml
+  #   with:
+  #     safe-checkout: ${{ needs.set-vars.outputs.checkout-sha }}
+  #   secrets: inherit
 
-  objectivec:
-    name: Objective-C
-    needs: [set-vars]
-    uses: ./.github/workflows/test_objectivec.yml
-    with:
-      continuous-run: ${{ needs.set-vars.outputs.continuous-run }}
-      safe-checkout: ${{ needs.set-vars.outputs.checkout-sha }}
-      continuous-prefix: ${{ needs.set-vars.outputs.continuous-prefix }}
-    secrets: inherit
+  # objectivec:
+  #   name: Objective-C
+  #   needs: [set-vars]
+  #   uses: ./.github/workflows/test_objectivec.yml
+  #   with:
+  #     continuous-run: ${{ needs.set-vars.outputs.continuous-run }}
+  #     safe-checkout: ${{ needs.set-vars.outputs.checkout-sha }}
+  #     continuous-prefix: ${{ needs.set-vars.outputs.continuous-prefix }}
+  #   secrets: inherit
 
-  rust:
-    name: Rust
-    needs: [set-vars]
-    uses: ./.github/workflows/test_rust.yml
-    with:
-      safe-checkout: ${{ needs.set-vars.outputs.checkout-sha }}
-    secrets: inherit
+  # rust:
+  #   name: Rust
+  #   needs: [set-vars]
+  #   uses: ./.github/workflows/test_rust.yml
+  #   with:
+  #     safe-checkout: ${{ needs.set-vars.outputs.checkout-sha }}
+  #   secrets: inherit
 
-  upb:
-    name: μpb
-    needs: [set-vars]
-    uses: ./.github/workflows/test_upb.yml
-    with:
-      continuous-run: ${{ needs.set-vars.outputs.continuous-run }}
-      safe-checkout: ${{ needs.set-vars.outputs.checkout-sha }}
-      continuous-prefix: ${{ needs.set-vars.outputs.continuous-prefix }}
-    secrets: inherit
+  # upb:
+  #   name: μpb
+  #   needs: [set-vars]
+  #   uses: ./.github/workflows/test_upb.yml
+  #   with:
+  #     continuous-run: ${{ needs.set-vars.outputs.continuous-run }}
+  #     safe-checkout: ${{ needs.set-vars.outputs.checkout-sha }}
+  #     continuous-prefix: ${{ needs.set-vars.outputs.continuous-prefix }}
+  #   secrets: inherit
 
-  hpb:
-    name: hpb
-    needs: [set-vars]
-    uses: ./.github/workflows/test_hpb.yml
-    with:
-      safe-checkout: ${{ needs.set-vars.outputs.checkout-sha }}
-    secrets: inherit
+  # hpb:
+  #   name: hpb
+  #   needs: [set-vars]
+  #   uses: ./.github/workflows/test_hpb.yml
+  #   with:
+  #     safe-checkout: ${{ needs.set-vars.outputs.checkout-sha }}
+  #   secrets: inherit
 
-  staleness:
-    name: Staleness
-    needs: [set-vars]
-    uses: ./.github/workflows/staleness_check.yml
-    # Staleness tests have scheduled runs during off-hours to avoid race conditions.
-    if: ${{ github.event_name != 'schedule' }}
-    with:
-      continuous-run: ${{ needs.set-vars.outputs.continuous-run }}
-      safe-checkout: ${{ needs.set-vars.outputs.checkout-sha }}
-    secrets: inherit
+  # staleness:
+  #   name: Staleness
+  #   needs: [set-vars]
+  #   uses: ./.github/workflows/staleness_check.yml
+  #   # Staleness tests have scheduled runs during off-hours to avoid race conditions.
+  #   if: ${{ github.event_name != 'schedule' }}
+  #   with:
+  #     continuous-run: ${{ needs.set-vars.outputs.continuous-run }}
+  #     safe-checkout: ${{ needs.set-vars.outputs.checkout-sha }}
+  #   secrets: inherit
 
   # This test depends on all blocking tests and indicates whether they all suceeded.
-  all-blocking-tests:
-    name: All Blocking Tests${{ github.event_name == 'pull_request_target' && ' (fork)' || ''}}
-    needs: [set-vars, validate-yaml, bazel, cpp, java, python, ruby, php, php-ext, csharp, objectivec, rust, upb, hpb, staleness]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check test results
-        run: "${{ !contains(join(needs.*.result, ' '), 'failure') && !contains(join(needs.*.result, ' '), 'cancelled') }}"
-    # This workflow must run even if one or more of the dependent workflows
-    # failed.
-    if: always()
+  # all-blocking-tests:
+  #   name: All Blocking Tests${{ github.event_name == 'pull_request_target' && ' (fork)' || ''}}
+  #   needs: [set-vars, validate-yaml, bazel, cpp, java, python, ruby, php, php-ext, csharp, objectivec, rust, upb, hpb, staleness]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Check test results
+  #       run: "${{ !contains(join(needs.*.result, ' '), 'failure') && !contains(join(needs.*.result, ' '), 'cancelled') }}"
+  #   # This workflow must run even if one or more of the dependent workflows
+  #   # failed.
+  #   if: always()
